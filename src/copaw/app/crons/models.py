@@ -13,12 +13,13 @@ from pydantic import (
 )
 
 from ..channels.schema import DEFAULT_CHANNEL
+from ...utils.timezone import get_local_timezone
 
 
 class ScheduleSpec(BaseModel):
     type: Literal["cron"] = "cron"
     cron: str = Field(...)
-    timezone: str = "UTC"
+    timezone: str = Field(default_factory=get_local_timezone)
 
     @field_validator("cron")
     @classmethod

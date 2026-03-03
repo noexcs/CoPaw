@@ -12,6 +12,7 @@ from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger
 
 from ...config import get_heartbeat_config
+from ...utils.timezone import get_local_timezone
 
 from ..console_push_store import append as push_store_append
 from .executor import CronExecutor
@@ -36,12 +37,14 @@ class CronManager:
         repo: BaseJobRepository,
         runner: Any,
         channel_manager: Any,
-        timezone: str = "UTC",
+        timezone: Optional[str] = None,
     ):
         self._repo = repo
         self._runner = runner
         self._channel_manager = channel_manager
-        self._scheduler = AsyncIOScheduler(timezone=timezone)
+        self._scheduler = AsyncIOScheduler(
+            timezone=timezone or get_local_timezone()
+        )
         self._executor = CronExecutor(
             runner=runner,
             channel_manager=channel_manager,

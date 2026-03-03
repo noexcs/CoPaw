@@ -9,6 +9,7 @@ import click
 
 from .http import client, print_json
 from ..app.channels.schema import DEFAULT_CHANNEL
+from ..utils.timezone import get_local_timezone
 
 
 def _base_url(ctx: click.Context, base_url: Optional[str]) -> str:
@@ -102,11 +103,13 @@ def _build_spec_from_cli(
     target_user: str,
     target_session: str,
     text: Optional[str],
-    timezone: str,
+    timezone: Optional[str],
     enabled: bool,
     mode: str,
 ) -> dict:
     """Build CronJobSpec JSON payload from CLI args (no id)."""
+    if timezone is None:
+        timezone = get_local_timezone()
     schedule = {"type": "cron", "cron": cron, "timezone": timezone}
     dispatch = {
         "type": "channel",
@@ -237,8 +240,9 @@ def _build_spec_from_cli(
 )
 @click.option(
     "--timezone",
-    default="UTC",
-    help="Timezone for the cron schedule (e.g. UTC, America/New_York).",
+    default=None,
+    help="Timezone for the cron schedule (e.g. UTC, America/New_York). "
+    "Defaults to system local timezone.",
 )
 @click.option(
     "--enabled/--no-enabled",
@@ -305,7 +309,7 @@ def create_job(
             target_user=target_user or "",
             target_session=target_session or "",
             text=text,
-            timezone=timezone,
+            timezone=timezone or get_local_timezone(),
             enabled=enabled,
             mode=mode,
         )
