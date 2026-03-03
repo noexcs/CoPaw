@@ -29,7 +29,7 @@ from .registry import (
     validate_custom_provider_id,
 )
 
-_PROVIDERS_DIR = Path(__file__).resolve().parent
+_PROVIDERS_DIR = Path.home() / ".copaw"
 _PROVIDERS_JSON = _PROVIDERS_DIR / "providers.json"
 
 
